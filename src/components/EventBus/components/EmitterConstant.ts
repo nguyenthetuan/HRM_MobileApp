@@ -1,0 +1,9 @@
+export enum EmitEventConstant {
+  GET_LIST_REQUEST = 'GET_LIST_REQUEST',
+  GET_LIST_EXPENSE = 'GET_LIST_EXPENSE',
+}
+
+export enum EmitActionConstant {
+  GET_LIST_REQUEST = 'GET_LIST_REQUEST',
+  GET_LIST_EXPENSE = 'GET_LIST_EXPENSE',
+}

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "764661541663",
+    "project_id": "hrmsintecha",
+    "storage_bucket": "hrmsintecha.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:764661541663:android:4168fa84adafa9de281e2a",
+        "android_client_info": {
+          "package_name": "com.sintecha"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8nOv-Whnpp7FOWHrw_-FcGQ7Sb1jnap8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
