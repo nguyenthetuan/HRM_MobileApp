@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Header from '@/components/header'; // Nếu bạn đang dùng Header riêng
@@ -13,6 +14,7 @@ import CommonDropdown from '@/components/SelectDropdow';
 import DatePicker from 'react-native-date-picker';
 import moment from 'moment';
 import { useCreateHoliday } from '@/hooks/Company/CreateHoliday';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 const CreateHoliday = () => {
   const {
@@ -33,120 +35,129 @@ const CreateHoliday = () => {
     return parseInt(amount, 10);
   };
   return (
-    <View style={styles.container}>
-      <Header
-        title="Tạo ngày nghỉ"
-        onGoBack={() => {
-          navigation.goBack();
-        }}
-      />
-      <ScrollView style={styles.form}>
-        <View style={{ flex: 1 }}>
+    <KeyboardAwareScrollView
+      bottomOffset={30} // khoảng đệm giữa keyboard và input
+      contentContainerStyle={{ flexGrow: 1 }}
+    >
+      <View style={styles.container}>
+        <Header
+          title="Tạo ngày nghỉ"
+          onGoBack={() => {
+            navigation.goBack();
+          }}
+        />
+        <View style={styles.form}>
           <View style={{ flex: 1 }}>
-            <View>
-              <Text style={styles.label}>Loại Đơn</Text>
-              <CommonDropdown
-                data={categorys}
-                defaultValue={formRequest.CategoryID}
-                onSelect={(elm) => {
-                  handleChange('CategoryID', elm.key);
-                }}
-              />
-            </View>
-            {Errors.CategoryID && (
-              <Text style={styles.textError}>{Errors.CategoryID}</Text>
-            )}
-            {formRequest.CategoryID === 2 && (
-              <View style={styles.shift}>
-                <Text style={styles.label}>Chọn ca</Text>
+            <View style={{ flex: 1 }}>
+              <View>
+                <Text style={styles.label}>Loại Đơn</Text>
                 <CommonDropdown
-                  data={shift}
+                  data={categorys}
+                  defaultValue={formRequest.CategoryID}
                   onSelect={(elm) => {
-                    handleChange('ShiftId', elm.key);
+                    handleChange('CategoryID', elm.key);
                   }}
                 />
-                {Errors.ShiftId && (
-                  <Text style={styles.textError}>{Errors.ShiftId}</Text>
-                )}
               </View>
-            )}
-            <Text style={styles.name}>Họ và tên</Text>
-            <View style={styles.colum}>
-              <Text style={styles.value}>{user.Name}</Text>
-            </View>
+              {Errors.CategoryID && (
+                <Text style={styles.textError}>{Errors.CategoryID}</Text>
+              )}
+              {formRequest.CategoryID === 2 && (
+                <View style={styles.shift}>
+                  <Text style={styles.label}>Chọn ca</Text>
+                  <CommonDropdown
+                    data={shift}
+                    onSelect={(elm) => {
+                      handleChange('ShiftId', elm.key);
+                    }}
+                  />
+                  {Errors.ShiftId && (
+                    <Text style={styles.textError}>{Errors.ShiftId}</Text>
+                  )}
+                </View>
+              )}
+              <Text style={styles.name}>Họ và tên</Text>
+              <View style={styles.colum}>
+                <Text style={styles.value}>{user.Name}</Text>
+              </View>
 
-            <Text style={styles.name}>Phòng ban</Text>
-            <View style={[styles.colum]}>
-              <Text style={styles.value}>
-                {
-                  common.deparments.find(
-                    (elm: any) => elm.ID === user.DepartmentId,
-                  )?.Name
-                }
-              </Text>
-            </View>
-            {(formRequest.CategoryID === 1 || formRequest.CategoryID === 4) && (
-              <View style={styles.txtTime}>
-                <Text style={styles.label}>Số phút</Text>
-                <TextInput
-                  style={styles.textTime}
-                  value={`${formatMoney(formRequest.Time)}`}
-                  onChangeText={(text) => handleChange('Time', text)}
-                  keyboardType="numeric"
-                />
-                <Text style={styles.textError}>{Errors.Time}</Text>
-              </View>
-            )}
-            <View style={styles.textAreaContainer}>
-              <Text style={styles.label}>Lý do</Text>
-              <TextInput
-                style={styles.textArea}
-                value={formRequest.Reason}
-                onChangeText={(text) => handleChange('Reason', text)}
-                maxLength={255}
-                multiline
-              />
-              <Text style={styles.textError}>{Errors.Reason}</Text>
-            </View>
-            <View>
-              <Text style={styles.label}>Chọn ngày</Text>
-              <TouchableOpacity
-                style={styles.actionRow}
-                onPress={() => {
-                  setShowDate(true);
-                }}
-              >
-                <Icon name="calendar-outline" size={20} color="#333" />
-                <Text style={styles.actionText}>
-                  {moment(formRequest.DateRequest).format('DD/MM/YYYY')}
+              <Text style={styles.name}>Phòng ban</Text>
+              <View style={[styles.colum]}>
+                <Text style={styles.value}>
+                  {
+                    common.deparments.find(
+                      (elm: any) => elm.ID === user.DepartmentId,
+                    )?.Name
+                  }
                 </Text>
-                <Icon name="add-outline" size={20} color="#888" />
-              </TouchableOpacity>
+              </View>
+              {(formRequest.CategoryID === 1 ||
+                formRequest.CategoryID === 4) && (
+                <View style={styles.txtTime}>
+                  <Text style={styles.label}>Số phút</Text>
+                  <TextInput
+                    style={styles.textTime}
+                    value={`${formatMoney(formRequest.Time)}`}
+                    onChangeText={(text) => handleChange('Time', text)}
+                    keyboardType="numeric"
+                  />
+                  <Text style={styles.textError}>{Errors.Time}</Text>
+                </View>
+              )}
+              <View style={styles.textAreaContainer}>
+                <Text style={styles.label}>Lý do</Text>
+                <TextInput
+                  style={styles.textArea}
+                  value={formRequest.Reason}
+                  onChangeText={(text) => handleChange('Reason', text)}
+                  maxLength={255}
+                  multiline
+                />
+                <Text style={styles.textError}>{Errors.Reason}</Text>
+              </View>
+              <View>
+                <Text style={styles.label}>Chọn ngày</Text>
+                <TouchableOpacity
+                  style={styles.actionRow}
+                  onPress={() => {
+                    setShowDate(true);
+                  }}
+                >
+                  <Icon name="calendar-outline" size={20} color="#333" />
+                  <Text style={styles.actionText}>
+                    {moment(formRequest.DateRequest).format('DD/MM/YYYY')}
+                  </Text>
+                  <Icon name="add-outline" size={20} color="#888" />
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
+          <TouchableOpacity
+            style={styles.saveButton}
+            onPress={() => onSubmit()}
+          >
+            <Text style={styles.saveText}>Tạo Đơn</Text>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.saveButton} onPress={() => onSubmit()}>
-          <Text style={styles.saveText}>Tạo Đơn</Text>
-        </TouchableOpacity>
-      </ScrollView>
-      <DatePicker
-        modal
-        open={!!showDate}
-        date={new Date(formRequest.DateRequest)}
-        onConfirm={(date) => {
-          handleChange('DateRequest', moment(date).toISOString());
-        }}
-        onCancel={() => {
-          setShowDate(false);
-        }}
-        // Đặt chế độ là 'date' để chọn ngày tháng năm
-        mode="date"
-        locale="vi"
-        title={'Chọn ngày tháng'}
-        style={{ flex: 1 }}
-        minimumDate={new Date()}
-      />
-    </View>
+        <DatePicker
+          modal
+          open={!!showDate}
+          date={new Date(formRequest.DateRequest)}
+          onConfirm={(date) => {
+            handleChange('DateRequest', moment(date).toISOString());
+          }}
+          onCancel={() => {
+            setShowDate(false);
+          }}
+          // Đặt chế độ là 'date' để chọn ngày tháng năm
+          mode="date"
+          locale="vi"
+          title={'Chọn ngày tháng'}
+          style={{ flex: 1 }}
+          minimumDate={new Date()}
+        />
+      </View>
+    </KeyboardAwareScrollView>
   );
 };
 

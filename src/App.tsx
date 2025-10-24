@@ -15,7 +15,8 @@ import { AuthProvider } from './navigation/AuthContext';
 import { MyAlertProvider } from './components/AlertContext';
 import Toast from 'react-native-toast-message';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-
+import { KeyboardProvider } from 'react-native-keyboard-controller';
+import { StatusBar } from 'react-native';
 export const queryClient = new QueryClient({
   defaultOptions: {
     mutations: { retry: false },
@@ -29,30 +30,25 @@ function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <QueryClientProvider client={queryClient}>
-          <Provider store={store}>
-            <PersistGate loading={null} persistor={persistor}>
-              <I18nextProvider i18n={i18n}>
-                <AuthProvider>
-                  <MyAlertProvider>
-                    <ThemeProvider storage={storage}>
-                      <KeyboardAwareScrollView
-                        style={{ flex: 1 }}
-                        contentContainerStyle={{ flexGrow: 1 }}
-                        enableOnAndroid={false}
-                        keyboardShouldPersistTaps="handled"
-                        extraScrollHeight={0} // hoặc nhỏ hơn, ví dụ 10
-                      >
+        <KeyboardProvider statusBarTranslucent navigationBarTranslucent>
+          <QueryClientProvider client={queryClient}>
+            <Provider store={store}>
+              <PersistGate loading={null} persistor={persistor}>
+                <I18nextProvider i18n={i18n}>
+                  <AuthProvider>
+                    <MyAlertProvider>
+                      <ThemeProvider storage={storage}>
+                        <StatusBar translucent backgroundColor="transparent" />
                         <RootNavigator />
-                      </KeyboardAwareScrollView>
-                      <Toast />
-                    </ThemeProvider>
-                  </MyAlertProvider>
-                </AuthProvider>
-              </I18nextProvider>
-            </PersistGate>
-          </Provider>
-        </QueryClientProvider>
+                        <Toast />
+                      </ThemeProvider>
+                    </MyAlertProvider>
+                  </AuthProvider>
+                </I18nextProvider>
+              </PersistGate>
+            </Provider>
+          </QueryClientProvider>
+        </KeyboardProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

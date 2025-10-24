@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ScrollView,
   Image,
+  Platform,
 } from 'react-native';
 import Header from '@/components/header';
 import { useCreateExpense } from '@/hooks/Company/CreateExpense';
@@ -16,6 +17,7 @@ import ModalSelectEmployeer from './compoents/ModalSelectEmployeer';
 import { BASE_URL } from '@env';
 import Icon from 'react-native-vector-icons/Feather';
 import { useSelector } from 'react-redux';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 const CreateExpense = () => {
   const {
@@ -47,151 +49,145 @@ const CreateExpense = () => {
   }, [employeers]);
 
   return (
-    <View style={styles.container}>
+    <KeyboardAwareScrollView
+      bottomOffset={30} // khoảng đệm giữa keyboard và input
+      contentContainerStyle={{ flexGrow: 1 }}
+    >
       <Header
         title="Tạo đơn xin kinh phí"
         onGoBack={() => navigation.goBack()}
       />
 
-      <ScrollView style={styles.form}>
-        <View style={{ flex: 1 }}>
-          {/* Loại kinh phí */}
+      <View style={styles.form}>
+        {/* Loại kinh phí */}
+        <View>
           <Text style={styles.label}>Loại kinh phí</Text>
           <CommonDropdown
             data={expenseType}
             defaultValue={formRequest.ExpenseType}
             onSelect={(elm) => handleChange('ExpenseType', elm.key)}
-            style={styles.dropdow}
           />
           {Errors.ExpenseType && (
             <Text style={styles.textError}>{Errors.ExpenseType}</Text>
           )}
-
-          {/* Số tiền */}
-          <View style={{ marginTop: 10 }}>
-            <Text style={styles.label}>Số tiền</Text>
-            <TextInput
-              style={styles.textMoney}
-              value={formatMoney(formRequest?.Amount)}
-              onChangeText={(text) => handleChange('Amount', text)}
-              keyboardType="numeric"
-            />
-            {Errors.Amount && (
-              <Text style={styles.textError}>{Errors.Amount}</Text>
-            )}
-          </View>
-
-          {/* Họ và tên */}
-          <Text style={styles.name}>Họ và tên</Text>
-          <View style={styles.row}>
-            <Text style={styles.value}>{user.Name}</Text>
-          </View>
-
-          {/* Phòng ban */}
-          <Text style={styles.name}>Phòng ban</Text>
-          <View style={styles.row}>
-            <Text style={styles.value}>
-              {
-                common.deparments.find(
-                  (elm: any) => elm.ID === user.DepartmentId,
-                )?.Name
-              }
-            </Text>
-          </View>
-
-          {/* Lý do */}
-          <View style={styles.textAreaContainer}>
-            <Text style={styles.label}>Lý do</Text>
-            <TextInput
-              style={styles.textArea}
-              value={formRequest.Reason}
-              onChangeText={(text) => handleChange('Reason', text)}
-              maxLength={255}
-              multiline
-            />
-            {Errors.Reason && (
-              <Text style={styles.textError}>{Errors.Reason}</Text>
-            )}
-          </View>
-          {/* Người theo dõi */}
-          <Text style={styles.name}>Người theo dõi</Text>
-          <TouchableOpacity style={styles.row} onPress={() => showModal()}>
-            <Text>Chọn người theo dõi</Text>
-          </TouchableOpacity>
-          {formRequest?.ListUserNotify?.length > 0 && (
-            <View style={styles.selectedList}>
-              {formRequest?.ListUserNotify?.map((IdUser: any) => {
-                const employeer = employeerMap.get(IdUser);
-                if (!employeer) return null;
-                return (
-                  <View key={employeer.ID} style={styles.avatarItem}>
-                    <View>
-                      {employeer.Avata ? (
-                        <Image
-                          source={{ uri: `${BASE_URL}${employeer.Avata}` }}
-                          style={styles.avatar}
-                        />
-                      ) : (
-                        <View style={styles.notAvatar}>
-                          <Icon name="user" size={24} color="#3B82F6" />
-                        </View>
-                      )}
-                      <TouchableOpacity
-                        style={styles.removeIcon}
-                        onPress={() => handleSelectFollower(employeer)}
-                      >
-                        <Text style={styles.removeText}>×</Text>
-                      </TouchableOpacity>
-                    </View>
-                    <Text style={styles.avatarName} numberOfLines={1}>
-                      {employeer.Name}
-                    </Text>
-                  </View>
-                );
-              })}
-            </View>
-          )}
-          {Errors.FollowerId && (
-            <Text style={styles.textError}>{Errors.FollowerId}</Text>
-          )}
-          {/* Chọn file */}
-          <View style={{ marginTop: 16 }}>
-            <Text style={styles.label}>File đính kèm</Text>
-            <TouchableOpacity
-              style={styles.fileButton}
-              onPress={handlePickFile}
-            >
-              <Text style={styles.fileText}>Chọn file</Text>
-            </TouchableOpacity>
-            {selectedFile && (
-              <Text style={styles.selectedFile}>
-                {selectedFile[0].name || selectedFile.uri}
-              </Text>
-            )}
-          </View>
-
-          {/* Nút tạo đơn */}
-          <TouchableOpacity
-            style={styles.saveButton}
-            onPress={() => onSubmit()}
-          >
-            <Text style={styles.saveText}>Tạo Đơn</Text>
-          </TouchableOpacity>
         </View>
-      </ScrollView>
+
+        {/* Số tiền */}
+        <View style={{ marginTop: 10 }}>
+          <Text style={styles.label}>Số tiền</Text>
+          <TextInput
+            style={styles.textMoney}
+            value={formatMoney(formRequest?.Amount)}
+            onChangeText={(text) => handleChange('Amount', text)}
+            keyboardType="numeric"
+          />
+          {Errors.Amount && (
+            <Text style={styles.textError}>{Errors.Amount}</Text>
+          )}
+        </View>
+
+        {/* Họ và tên */}
+        <Text style={styles.name}>Họ và tên</Text>
+        <View style={styles.row}>
+          <Text style={styles.value}>{user.Name}</Text>
+        </View>
+
+        {/* Phòng ban */}
+        <Text style={styles.name}>Phòng ban</Text>
+        <View style={styles.row}>
+          <Text style={styles.value}>
+            {
+              common.deparments.find((elm: any) => elm.ID === user.DepartmentId)
+                ?.Name
+            }
+          </Text>
+        </View>
+
+        {/* Lý do */}
+        <View style={styles.textAreaContainer}>
+          <Text style={styles.label}>Lý do</Text>
+          <TextInput
+            style={styles.textArea}
+            value={formRequest.Reason}
+            onChangeText={(text) => handleChange('Reason', text)}
+            maxLength={255}
+            multiline
+          />
+          {Errors.Reason && (
+            <Text style={styles.textError}>{Errors.Reason}</Text>
+          )}
+        </View>
+        {/* Người theo dõi */}
+        <Text style={styles.name}>Người theo dõi</Text>
+        <TouchableOpacity style={styles.row} onPress={() => showModal()}>
+          <Text>Chọn người theo dõi</Text>
+        </TouchableOpacity>
+        {formRequest?.ListUserNotify?.length > 0 && (
+          <View style={styles.selectedList}>
+            {formRequest?.ListUserNotify?.map((IdUser: any) => {
+              const employeer = employeerMap.get(IdUser);
+              if (!employeer) return null;
+              return (
+                <View key={employeer.ID} style={styles.avatarItem}>
+                  <View>
+                    {employeer.Avata ? (
+                      <Image
+                        source={{ uri: `${BASE_URL}${employeer.Avata}` }}
+                        style={styles.avatar}
+                      />
+                    ) : (
+                      <View style={styles.notAvatar}>
+                        <Icon name="user" size={24} color="#3B82F6" />
+                      </View>
+                    )}
+                    <TouchableOpacity
+                      style={styles.removeIcon}
+                      onPress={() => handleSelectFollower(employeer)}
+                    >
+                      <Text style={styles.removeText}>×</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <Text style={styles.avatarName} numberOfLines={1}>
+                    {employeer.Name}
+                  </Text>
+                </View>
+              );
+            })}
+          </View>
+        )}
+        {Errors.FollowerId && (
+          <Text style={styles.textError}>{Errors.FollowerId}</Text>
+        )}
+        {/* Chọn file */}
+        <View style={{ marginTop: 16 }}>
+          <Text style={styles.label}>File đính kèm</Text>
+          <TouchableOpacity style={styles.fileButton} onPress={handlePickFile}>
+            <Text style={styles.fileText}>Chọn file</Text>
+          </TouchableOpacity>
+          {selectedFile && (
+            <Text style={styles.selectedFile}>
+              {selectedFile[0].name || selectedFile.uri}
+            </Text>
+          )}
+        </View>
+        {/* Nút tạo đơn */}
+        <TouchableOpacity style={styles.saveButton} onPress={() => onSubmit()}>
+          <Text style={styles.saveText}>Tạo Đơn</Text>
+        </TouchableOpacity>
+      </View>
       <ModalSelectEmployeer
         ref={refModal}
         onChange={(value: any) => handleSelectFollower(value)}
         selectedFollower={formRequest.ListUserNotify}
       />
-    </View>
+    </KeyboardAwareScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   dropdow: {},
   container: { flex: 1, backgroundColor: '#fff' },
-  form: { padding: 16, flex: 1 },
+  form: { padding: 16, flex: 1, backgroundColor: '#fff' },
   row: {
     borderWidth: 1,
     borderColor: '#E5E7EB',
